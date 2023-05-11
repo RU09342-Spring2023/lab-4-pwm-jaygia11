@@ -27,20 +27,20 @@ void led_setup()
 
 }
 
-void timer_B1_setup()
+void timer_B3_setup()
 {
 
-    // Initialize Timer B1 for PWM output
-    TB1CCR0 = 1000 - 1;
-    TB1CTL = TBSSEL__SMCLK | MC__UP | TBCLR;
-    TB1CCTL1 = OUTMOD_7;
-    TB1CCTL2 = OUTMOD_7;
-    TB1CCTL3 = OUTMOD_7;
+    // Initialize Timer B3 for PWM output
+    TB3CCR0 = 1000 - 1;
+    TB3CTL = TBSSEL__SMCLK | MC__UP | TBCLR;
+    TB3CCTL1 = OUTMOD_7;
+    TB3CCTL2 = OUTMOD_7;
+    TB3CCTL3 = OUTMOD_7;
 
     // Set initial duty cycles for the LEDs
-    TB1CCR1 = red_duty;
-    TB1CCR2 = green_duty;
-    TB1CCR3 = blue_duty;
+    TB3CCR1 = red_duty;
+    TB3CCR2 = green_duty;
+    TB3CCR3 = blue_duty;
 
 }
 
@@ -60,7 +60,7 @@ int main(void)
     WDTCTL = WDTPW | WDTHOLD;   // Disable watchdog timer
 
     led_setup();
-    timer_B1_setup();
+    timer_B3_setup();
     timer_B0_setup();
 
     PM5CTL0 &= ~LOCKLPM5;
@@ -70,12 +70,6 @@ int main(void)
     __no_operation();   // Do nothing
 
 }
-
-
-
-
-
-
 
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void Timer0_B0_ISR(void)
@@ -120,10 +114,10 @@ __interrupt void Timer0_B0_ISR(void)
             break;
 
         default:
-            red = 0;                    // Red duty cycle is at 0%
-            green = 999;                // Green duty cycle is at 100%
-            blue = 999;                 // Blue duty cycle is at 100%
-            LEDstate = 0;               // Move to first case
+            red_duty = 0;                    // Red duty cycle is at 0%
+            green_duty = 999;                // Green duty cycle is at 100%
+            blue_duty = 999;                 // Blue duty cycle is at 100%
+            led_state = 0;               // Move to first case
     }
 }
 
@@ -136,11 +130,11 @@ __interrupt void Port6_ISR(void)
 
         P6IFG &= ~BIT0; // Clear interrupt flag
 
-        if (TB1CCR1 == 0) // If the RED LED is off
-            TB1CCR1 = 1000 - 1; // Turn on RED LED
+        if (TB3CCR1 == 0) // If the RED LED is off
+            TB3CCR1 = 1000 - 1; // Turn on RED LED
 
         else // If the RED LED is on
-            TB1CCR1 = 0; // Turn off RED LED
+            TB3CCR1 = 0; // Turn off RED LED
 
     }
 
@@ -149,11 +143,11 @@ __interrupt void Port6_ISR(void)
 
         P6IFG &= ~BIT1; // Clear interrupt flag
 
-        if (TB1CCR2 == 0) // If the GREEN LED is off
-            TB1CCR2 = 1000 - 1; // Turn on GREEN LED
+        if (TB3CCR2 == 0) // If the GREEN LED is off
+            TB3CCR2 = 1000 - 1; // Turn on GREEN LED
 
         else // If the GREEN LED is on
-            TB1CCR2 = 0; // Turn off GREEN LED
+            TB3CCR2 = 0; // Turn off GREEN LED
 
     }
 
@@ -162,11 +156,11 @@ __interrupt void Port6_ISR(void)
 
         P6IFG &= ~BIT2; // Clear interrupt flag
 
-        if (TB1CCR3 == 0) // If the BLUE LED is off
-            TB1CCR3 = 1000 - 1; // Turn on BLUE LED
+        if (TB3CCR3 == 0) // If the BLUE LED is off
+            TB3CCR3 = 1000 - 1; // Turn on BLUE LED
 
         else // If the BLUE LED is on
-            TB1CCR3 = 0; // Turn off BLUE LED
+            TB3CCR3 = 0; // Turn off BLUE LED
 
     }
 }

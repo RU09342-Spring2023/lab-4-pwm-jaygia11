@@ -10,17 +10,12 @@
 #include <msp430.h>
 
 // Initialize the LEDs
-void initLEDs() {
+void gpioInit() {
 
   P1DIR |= BIT0;    // Pin 1.0 Output
   P1OUT &= ~BIT0;   // Cleared pin
   P6DIR |= BIT6;    // Pin 6.6 Output
   P6OUT &= ~BIT6;   // Cleared pin
-
-}
-
-//  Initialize the buttons
-void initButton() {
 
   P4DIR &= ~BIT1;   // pin 4.1 input
   P4OUT |= BIT1;
@@ -33,11 +28,10 @@ void initButton() {
   P2REN |= BIT3;    // pull up
   P2IES &= ~BIT3;   // interrupt
   P2IE |= BIT3;
-
 }
 
 // Setup the timers for PWM
-void initTimers() {
+void timerInit() {
 
   // Initialize Timer 0
   TB0CTL = TBSSEL__SMCLK | MC__UP | TBIE;   // TimerB0 SMCLK | Up-Mode | Interrupt Enabled
@@ -57,9 +51,9 @@ void main() {
 
   WDTCTL = WDTPW | WDTHOLD; // Watchdog timer disable
 
-  initLEDs();   // Initialize the LEDs
-  initButton(); // Initialize the Buttons
-  initTimers(); // Setup the timers for PWM
+  gpioInit();   // Initialize all of the pins
+
+  timerInit(); // Setup the timers for PWM
 
   PM5CTL0 &= ~LOCKLPM5;
 
